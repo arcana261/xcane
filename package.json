@@ -25,6 +25,8 @@
   },
   "homepage": "https://github.com/arcana261/xcane#readme",
   "devDependencies": {
+    "eslint": "^3.5.0",
+    "eslint-config-google": "^0.6.0",
     "jsdoc": "^3.4.1"
   }
 }
