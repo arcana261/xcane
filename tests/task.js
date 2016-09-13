@@ -15,7 +15,7 @@ function faulty(str) {
   return Promise.reject(str);
 }
 
-describe('Utils.Task', () => {
+describe('XCaneTask', () => {
   describe('#fromPromise', () => {
     it('should execute simple task', done => {
       let t = task.fromPromise(function* (x, y) {

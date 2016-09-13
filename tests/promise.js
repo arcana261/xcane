@@ -22,7 +22,7 @@ function check_this(cb) {
   cb();
 }
 
-describe('Utils.Promise', () => {
+describe('XCanePromise', () => {
   describe('#fromNode()', () => {
     it('should correctly return result', done => {
       let p = promise.fromNode(add_node);
