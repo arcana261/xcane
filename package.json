@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "doc": "jsdoc -r -c ./.jsdocrc.json -d docs",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha --reporter spec ./tests"
   },
   "repository": {
     "type": "git",
