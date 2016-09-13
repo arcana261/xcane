@@ -4,6 +4,7 @@
   "description": "A set of magical utilities which are ES6 friendly!",
   "main": "index.js",
   "scripts": {
+    "doc": "jsdoc -r -c ./.jsdocrc.json -d docs",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
