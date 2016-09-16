@@ -31,5 +31,8 @@
     "eslint-config-google": "^0.6.0",
     "jsdoc": "^3.4.1",
     "mocha": "^3.0.2"
+  },
+  "dependencies": {
+    "object-path": "^0.11.2"
   }
 }
