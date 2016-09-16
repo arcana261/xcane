@@ -16,9 +16,9 @@ function faulty(str) {
 }
 
 describe('XCaneTask', () => {
-  describe('#fromPromise', () => {
+  describe('#from', () => {
     it('should execute simple task', done => {
-      let t = task.fromPromise(function* (x, y) {
+      let t = task.from(function* (x, y) {
         return yield mul(yield add(x, y), 10);
       });
 
@@ -29,7 +29,7 @@ describe('XCaneTask', () => {
     });
 
     it('should throw failure', done => {
-      let t = task.fromPromise(function* (str) {
+      let t = task.from(function* (str) {
         try {
           return yield faulty(str);
         } catch (err) {
@@ -43,7 +43,7 @@ describe('XCaneTask', () => {
     });
 
     it('should fail if exception not caught', done => {
-      let t = task.fromPromise(function* (str) {
+      let t = task.from(function* (str) {
         return yield faulty(str);
       });
 
@@ -56,7 +56,7 @@ describe('XCaneTask', () => {
     });
 
     it('should work if totally synchron', done => {
-      let t = task.fromPromise(function* () {
+      let t = task.from(function* () {
         return 'a result';
       });
 
@@ -67,7 +67,7 @@ describe('XCaneTask', () => {
     });
 
     it('should catch synchron exceptions', done => {
-      let t = task.fromPromise(function* () {
+      let t = task.from(function* () {
         throw new Error('an error');
       });
 
@@ -79,7 +79,7 @@ describe('XCaneTask', () => {
     });
 
     it('should catch nested exceptions', done => {
-      let t = task.fromPromise(function* () {
+      let t = task.from(function* () {
         try {
           yield faulty('to blame');
         } catch (err) {
@@ -96,7 +96,7 @@ describe('XCaneTask', () => {
     });
 
     it('should be able to return value after catching exception', done => {
-      let t = task.fromPromise(function* () {
+      let t = task.from(function* () {
         try {
           yield faulty('to blame');
         } catch (err) {
@@ -113,7 +113,7 @@ describe('XCaneTask', () => {
     });
 
     it('should be able to execute after catching exception', done => {
-      let t = task.fromPromise(function* () {
+      let t = task.from(function* () {
         try {
           yield faulty('to blame');
         } catch (err) {
