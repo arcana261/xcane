@@ -2,6 +2,7 @@
 
 const iterable = require('../lib/iterable');
 const expect = require('chai').expect;
+const task = require('../lib/task');
 
 const data = [0, 1, 2, 3, 4, 5];
 const university = [{
@@ -414,6 +415,149 @@ describe('XCaneSynchronIterable', () => {
       expect(res.where(x => x.key.age === 19 && x.key.residence === 'tehran')
         .select(x => x.items).flatten().select(x => x.name).orderBy()
         .toArray()).to.be.deep.equal(['nazanin', 'taghi']);
+    });
+  });
+});
+
+describe('XCaneAsynchronIterable', () => {
+  describe('#constructor()', () => {
+    it('should be a Promise if provided a promise', () => {
+      let it = iterable.async(Promise.resolve(data));
+      expect(it).to.be.an.instanceof(Promise);
+    });
+
+    it('should be a Promise if provided raw data', () => {
+      let it = iterable.async(data);
+      expect(it).to.be.an.instanceof(Promise);
+    });
+  });
+
+  describe('#each', () => {
+    it('should iterate all items of a promise given promise', done => {
+      let result = [];
+
+      iterable.async(Promise.resolve(data)).each((v, i) => {
+        expect(i).to.be.equal(result.length);
+        result.push(v);
+        return Promise.resolve();
+      }).then(() => {
+        expect(result).to.be.deep.equal(data);
+        done();
+      }).catch(done);
+    });
+
+    it('should iterate all items of a promise given non-promise', done => {
+      let result = [];
+
+      iterable.async(Promise.resolve(data)).each((v, i) => {
+        expect(i).to.be.equal(result.length);
+        result.push(v);
+      }).then(() => {
+        expect(result).to.be.deep.equal(data);
+        done();
+      }).catch(done);
+    });
+
+    it('should iterate all items of a non-promise given promise', done => {
+      let result = [];
+
+      iterable.async(data).each((v, i) => {
+        expect(i).to.be.equal(result.length);
+        result.push(v);
+        return Promise.resolve();
+      }).then(() => {
+        expect(result).to.be.deep.equal(data);
+        done();
+      }).catch(done);
+    });
+
+    it('should iterate all items of a non-promise given non-promise', done => {
+      let result = [];
+
+      iterable.async(data).each((v, i) => {
+        expect(i).to.be.equal(result.length);
+        result.push(v);
+      }).then(() => {
+        expect(result).to.be.deep.equal(data);
+        done();
+      }).catch(done);
+    });
+
+    it('should stop enumerating by returning synchron false', done => {
+      let result = [];
+
+      iterable.async(data).each((v, i) => {
+        result.push(v);
+        if (i === 1) {
+          return false;
+        }
+      }).then(() => {
+        expect(result).to.be.deep.equal(data.slice(0, 2));
+        done();
+      }).catch(done);
+    });
+
+    it('should stop enumerating by returning asynchron false', done => {
+      let result = [];
+
+      iterable.async(data).each((v, i) => {
+        result.push(v);
+        if (i === 1) {
+          return Promise.resolve(false);
+        }
+
+        return Promise.resolve();
+      }).then(() => {
+        expect(result).to.be.deep.equal(data.slice(0, 2));
+        done();
+      }).catch(done);
+    });
+
+    it('should catch exception in iterator', done => {
+      iterable.async(data).each(() => {
+        throw new Error('fail');
+      }).then(() => done('should not had succeeded'))
+      .catch(err => {
+        expect(err).to.be.an.instanceof(Error);
+        expect(err.message).to.be.equal('fail');
+        done();
+      }).catch(done);
+    });
+
+    it('should catch fail in iterator', done => {
+      iterable.async(data).each(() => {
+        return Promise.reject('an error');
+      }).then(() => done('should not had succeeded'))
+      .catch(err => {
+        expect(err).to.be.equal('an error');
+        done();
+      }).catch(done);
+    });
+  });
+
+  describe('#toArray()', () => {
+    it('should correctly convert to array', done => {
+      task.spawn(function* () {
+        expect(yield iterable.async(data).toArray()).to.be.deep.equal(data);
+      }).then(() => done()).catch(done);
+    });
+  });
+
+  describe('#where()', () => {
+    it('should correctly filter items', done => {
+      task.spawn(function* () {
+        expect(yield iterable.async(data).where(v => v % 2 === 0).toArray())
+          .to.be.deep.equal(data.filter(v => v % 2 === 0));
+      }).then(() => done()).catch(done);
+    });
+  });
+
+  describe('#select()', () => {
+    it('should correctly map items', done => {
+      task.spawn(function* () {
+        expect(yield iterable.async(data).select(v => v * 2).toArray())
+          .to.be.deep.equal(data.map(v => v * 2));
+      }).then(() => done()).catch(done);
     });
   });
 });
