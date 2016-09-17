@@ -2,6 +2,8 @@
 
 const type = require('../lib/type');
 const expect = require('chai').expect;
+const promise = require('../lib/promise');
+const task = require('../lib/task');
 
 describe('XCaneType', () => {
   describe('#isString()', () => {
@@ -111,7 +113,7 @@ describe('XCaneType', () => {
     });
   });
 
-  describe('#isIterable', () => {
+  describe('#isIterable()', () => {
     it('should return true for iterables', () => {
       expect(type.isIterable([1, 2])).to.be.true;
       expect(type.isIterable({
@@ -127,6 +129,41 @@ describe('XCaneType', () => {
       })).to.be.false;
       expect(type.isIterable(null)).to.be.false;
       expect(type.isIterable(undefined)).to.be.false;
+    });
+  });
+
+  describe('#isPromise()', () => {
+    it('should return true for promises', () => {
+      let p = new Promise((resolve, reject) => {
+        resolve('hello');
+      });
+
+      expect(type.isPromise(p));
+    });
+
+    it('should return true for tasks', () => {
+      let p = task.spawn(function* () {
+        return 'hello';
+      });
+
+      expect(type.isPromise(p));
+    });
+
+    it('should return true for promise.fromNode', () => {
+      let p = promise.fromNode(cb => cb(null, 'hello'));
+
+      expect(type.isPromise(p));
+    });
+
+    it('should return false for non-promises', () => {
+      expect(type.isPromise(54.2)).to.be.false;
+      expect(type.isPromise(v => v + 2)).to.be.false;
+      expect(type.isPromise({
+        a: 's'
+      })).to.be.false;
+      expect(type.isPromise(null)).to.be.false;
+      expect(type.isPromise(undefined)).to.be.false;
+      expect(type.isPromise([1, 2])).to.be.false;
     });
   });
 });
