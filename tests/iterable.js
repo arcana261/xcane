@@ -312,7 +312,10 @@ describe('XCaneSynchronIterable', () => {
       expect(res.count()).to.be.equal(data.length);
       expect(() => {
         res.first();
-      }).to.throw(Error);
+
+
+
+     }).to.throw(Error);
     });
   });
 
@@ -515,23 +518,23 @@ describe('XCaneAsynchronIterable', () => {
 
     it('should catch exception in iterator', done => {
       iterable.async(data).each(() => {
-        throw new Error('fail');
-      }).then(() => done('should not had succeeded'))
-      .catch(err => {
-        expect(err).to.be.an.instanceof(Error);
-        expect(err.message).to.be.equal('fail');
-        done();
-      }).catch(done);
+          throw new Error('fail');
+        }).then(() => done('should not had succeeded'))
+        .catch(err => {
+          expect(err).to.be.an.instanceof(Error);
+          expect(err.message).to.be.equal('fail');
+          done();
+        }).catch(done);
     });
 
     it('should catch fail in iterator', done => {
       iterable.async(data).each(() => {
-        return Promise.reject('an error');
-      }).then(() => done('should not had succeeded'))
-      .catch(err => {
-        expect(err).to.be.equal('an error');
-        done();
-      }).catch(done);
+          return Promise.reject('an error');
+        }).then(() => done('should not had succeeded'))
+        .catch(err => {
+          expect(err).to.be.equal('an error');
+          done();
+        }).catch(done);
     });
   });
 
@@ -557,6 +560,124 @@ describe('XCaneAsynchronIterable', () => {
       task.spawn(function* () {
         expect(yield iterable.async(data).select(v => v * 2).toArray())
           .to.be.deep.equal(data.map(v => v * 2));
+      }).then(() => done()).catch(done);
+    });
+  });
+
+  describe('#accumulate()', () => {
+    it('should correctly accumulate items', done => {
+      task.spawn(function* () {
+        expect(yield iterable.async(data).select(v => v * 2)
+          .accumulate(0, (prev, v) => prev + v)).to.be.equal(
+
+
+
+          data.reduce((prev, v) => prev + v * 2, 0));
+      }).then(() => done()).catch(done);
+    });
+  });
+
+  describe('#sum()', () => {
+    it('should calculate sum of items correctly', done => {
+      task.spawn(function* () {
+        expect(yield iterable.async(data).sum())
+          .to.be.equal(data.reduce((p, v) => p + v, 0));
+      }).then(() => done()).catch(done);
+    });
+  });
+
+  describe('#count()', () => {
+    it('should calculate number of items correctly', done => {
+      task.spawn(function* () {
+        expect(yield iterable.async(data).count())
+          .to.be.equal(data.length);
+      }).then(() => done()).catch(done);
+    });
+  });
+
+  describe('#empty()', () => {
+    it('should return true for empty collections', done => {
+      task.spawn(function* () {
+        expect(yield iterable.async([]).empty()).to.be.true;
+      }).then(() => done()).catch(done);
+    });
+
+    it('should return false for non-empty collections', done => {
+      task.spawn(function* () {
+        expect(yield iterable.async(data).empty()).to.be.false;
+      }).then(() => done()).catch(done);
+    });
+  });
+
+  describe('#firstOrValue()', () => {
+    it('should return defult value if empty', done => {
+      task.spawn(function* () {
+        expect(yield iterable.async([]).firstOrValue(10)).to.be.equal(10);
+      }).then(() => done()).catch(done);
+    });
+
+    it('should return first item if not empty', done => {
+      task.spawn(function* () {
+        expect(yield iterable.async(data).firstOrValue(null))
+          .to.be.equal(data[0]);
+      }).then(() => done()).catch(done);
+    });
+  });
+
+  describe('#firstOrNull()', () => {
+    it('should return null if empty', done => {
+      task.spawn(function* () {
+        expect(yield iterable.async([]).firstOrNull()).to.be.null;
+      }).then(() => done()).catch(done);
+    });
+
+    it('should return first item if not empty', done => {
+      task.spawn(function* () {
+        expect(yield iterable.async(data).firstOrNull(data))
+          .to.be.equal(data[0]);
+      }).then(() => done()).catch(done);
+    });
+  });
+
+  describe('#first()', () => {
+    it('should reject if empty', done => {
+      task.spawn(function* () {
+          yield iterable.async([]).first();
+        }).then(() => done('it should not had succeeded'))
+        .catch(err => {
+          expect(err).to.be.equal('collection is empty');
+          done();
+        });
+    });
+
+    it('should return first value if not empty', done => {
+      task.spawn(function* () {
+        expect(yield iterable.async(data).first())
+          .to.be.equal(data[0]);
+      }).then(() => done()).catch(done);
+    });
+  });
+
+  describe('#lastOrValue()', () => {
+    it('should return default value if collection is empty', done => {
+      task.spawn(function* () {
+        expect(yield iterable.async([]).lastOrValue('default'))
+          .to.be.equal('default');
+      }).then(() => done()).catch(done);
+    });
+
+    it('should return last value if collection is not empty', done => {
+      task.spawn(function* () {
+        expect(yield iterable.async(data).lastOrValue('default'))
+          .to.be.equal(data[data.length - 1]);
+      }).then(() => done()).catch(done);
+    });
+  });
+
+  describe('#lastOrNull()', () => {
+    it('should retunr null if collection is empty', done => {
+      task.spawn(function* () {
+        expect(yield iterable.async([]).lastOrNull()).to.be.null;
       }).then(() => done()).catch(done);
     });
   });
