@@ -645,9 +645,10 @@ describe('XCaneAsynchronIterable', () => {
           yield iterable.async([]).first();
         }).then(() => done('it should not had succeeded'))
         .catch(err => {
-          expect(err).to.be.equal('collection is empty');
+          expect(err).to.be.an.instanceof(Error);
+          expect(err.message).to.be.equal('collection is empty');
           done();
-        });
+        }).catch(done);
     });
 
     it('should return first value if not empty', done => {
@@ -675,9 +676,86 @@ describe('XCaneAsynchronIterable', () => {
   });
 
   describe('#lastOrNull()', () => {
-    it('should retunr null if collection is empty', done => {
+    it('should return null if collection is empty', done => {
       task.spawn(function* () {
         expect(yield iterable.async([]).lastOrNull()).to.be.null;
+      }).then(() => done()).catch(done);
+    });
+
+    it('should return value if collection is not empty', done => {
+      task.spawn(function* () {
+        expect(yield iterable.async(data).lastOrNull())
+          .to.be.equal(data[data.length - 1]);
+      }).then(() => done()).catch(done);
+    });
+  });
+
+  describe('#last()', () => {
+    it('should throw error if collection is empty', done => {
+      task.spawn(function* () {
+        yield iterable.async([]).last();
+      }).then(() => done('should not had succeeded')).catch(err => {
+        expect(err).to.be.an.instanceof(Error);
+        expect(err.message).to.be.equal('collection is empty');
+        done();
+      }).catch(done);
+    });
+
+    it('should return last value if collection is not empty', done => {
+      task.spawn(function* () {
+        expect(yield iterable.async(data).last())
+          .to.be.equal(data[data.length - 1]);
+      }).then(() => done()).catch(done);
+    });
+  });
+
+  describe('#atOrValie()', () => {
+    it('should return defult value if index is out of range', done => {
+      task.spawn(function* () {
+        expect(yield iterable.async(data).atOrValue(data.length, 'default'))
+          .to.be.equal('default');
+      }).then(() => done()).catch(done);
+    })
+
+    it('should return value if index is in range', done => {
+      task.spawn(function* () {
+        expect(yield iterable.async(data).atOrValue(2))
+          .to.be.equal(data[2]);
+      }).then(() => done()).catch(done);
+    });
+  });
+
+  describe('#atOrNull()', () => {
+    it('should return null if index is out of range', done => {
+      task.spawn(function* () {
+        expect(yield iterable.async(data).atOrNull(data.length))
+          .to.be.null;
+      }).then(() => done()).catch(done);
+    });
+
+    it('should return value at specified index', done => {
+      task.spawn(function* () {
+        expect(yield iterable.async(data).atOrNull(2))
+          .to.be.equal(data[2]);
+      }).then(() => done()).catch(done);
+    });
+  });
+
+  describe('#at()', () => {
+    it('should reject an error if index is out of range', done => {
+      task.spawn(function* () {
+        yield iterable.async(data).at(data.length);
+      }).then(() => done('it should not had succeeded')).catch(err => {
+        expect(err).to.be.an.instanceof(Error);
+        expect(err.message).to.be.equal(`index ${data.length} out of bounds`);
+        done();
+      }).catch(done);
+    });
+
+    it('should return value at specified index', done => {
+      task.spawn(function* () {
+        expect(yield iterable.async(data).at(2))
+          .to.be.equal(data[2]);
       }).then(() => done()).catch(done);
     });
   });
