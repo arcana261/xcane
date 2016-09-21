@@ -759,4 +759,66 @@ describe('XCaneAsynchronIterable', () => {
       }).then(() => done()).catch(done);
     });
   });
+
+  describe('#some()', () => {
+    it('should return false if none of items match a predicate', done => {
+      task.spawn(function* () {
+        expect(yield iterable.async([0, 1, 2, 3]).some(v => v > 3))
+          .to.be.equal(false);
+      }).then(() => done()).catch(done);
+    });
+
+    it('should return true if none of items match a predicate', done => {
+      task.spawn(function* () {
+        expect(yield iterable.async([0, 1, 2, 3]).some(v => v >= 3))
+          .to.be.equal(true);
+      }).then(() => done()).catch(done);
+    });
+  });
+
+  describe('#every()', () => {
+    it('should return false if none of items match a predicate', done => {
+      task.spawn(function* () {
+        expect(yield iterable.async([0, 1, 2, 3]).every(v => v < 3))
+          .to.be.equal(false);
+      }).then(() => done()).catch(done);
+    });
+
+    it('should return true if all of items match a predicate', done => {
+      task.spawn(function* () {
+        expect(yield iterable.async([0, 1, 2, 3]).every(v => v <= 3))
+          .to.be.equal(true);
+      }).then(() => done()).catch(done);
+    });
+  });
+
+  describe('#flatten()', () => {
+    it('should flatten complex arrays', done => {
+      task.spawn(function* () {
+        expect(yield iterable.async([[0, 1], [2, 3]]).flatten()
+          .toArray()).to.be.deep.equal([0, 1, 2, 3]);
+      }).then(() => done()).catch(done);
+    });
+
+    it('should flatten mixed arrays', done => {
+      task.spawn(function* () {
+        expect(yield iterable.async([[0, 1], 2, [3]]).flatten().toArray())
+          .to.be.deep.equal([0, 1, 2, 3]);
+      }).then(() => done()).catch(done);
+    });
+
+    it('should flatten simple arrays', done => {
+      task.spawn(function* () {
+        expect(yield iterable.async([0, 1, 2, 3]).flatten().toArray())
+          .to.be.deep.equal([0, 1, 2, 3]);
+      }).then(() => done()).catch(done);
+    });
+
+    it('should flatten empty arrays', done => {
+      task.spawn(function* () {
+        expect(yield iterable.async([]).flatten().toArray())
+          .to.be.deep.equal([]);
+      }).then(() => done()).catch(done);
+    });
+  });
 });
