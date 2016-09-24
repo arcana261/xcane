@@ -420,6 +420,13 @@ describe('XCaneSynchronIterable', () => {
         .toArray()).to.be.deep.equal(['nazanin', 'taghi']);
     });
   });
+
+  describe('#uniqueBy()', () => {
+    it('should unique numbers', () => {
+      expect(iterable.from([5, 1, 9, 4, 1, 2]).uniqueBy().toArray())
+        .to.be.deep.equal([1, 2, 4, 5, 9]);
+    });
+  });
 });
 
 describe('XCaneAsynchronIterable', () => {
