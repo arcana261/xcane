@@ -498,6 +498,20 @@ describe('XCaneSynchronIterable', () => {
       expect(() => iterable.from([]).max()).to.throw(Error);
     });
   });
+
+  describe('#range()', () => {
+    it('should create a step 1 range', () =>
+      expect(iterable.from(iterable.range(1, 4)).toArray())
+        .to.be.deep.equal([1, 2, 3]));
+
+    it('should create a positive step range', () =>
+      expect(iterable.from(iterable.range(1, 8, 2)).toArray())
+        .to.be.deep.equal([1, 3, 5, 7]));
+
+    it('should create a negative step range', () =>
+      expect(iterable.from(iterable.range(8, 0, -2.5)).toArray())
+        .to.be.deep.equal([8, 5.5, 3, 0.5]));
+  });
 });
 
 describe('XCaneAsynchronIterable', () => {

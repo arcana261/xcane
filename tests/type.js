@@ -132,6 +132,24 @@ describe('XCaneType', () => {
     });
   });
 
+  describe('#isNumber()', () => {
+    it('should return true for iterables', () => {
+      expect(type.isNumber(54.2)).to.be.true;
+      expect(type.isNumber(5)).to.be.true;
+      expect(type.isNumber(-5)).to.be.true;
+      expect(type.isNumber(0)).to.be.true;
+    });
+
+    it('should return false for non-iterables', () => {
+      expect(type.isNumber(v => v + 2)).to.be.false;
+      expect(type.isNumber({
+        a: 's'
+      })).to.be.false;
+      expect(type.isNumber(null)).to.be.false;
+      expect(type.isNumber(undefined)).to.be.false;
+    });
+  });
+
   describe('#isPromise()', () => {
     it('should return true for promises', () => {
       let p = new Promise((resolve, reject) => {
