@@ -33,6 +33,11 @@
     "mocha": "^3.0.2"
   },
   "dependencies": {
-    "object-path": "^0.11.2"
+    "clone": "^1.0.2",
+    "object-path": "^0.11.2",
+    "request": "^2.75.0",
+    "request-promise-native": "^1.0.3",
+    "xml-js": "^0.9.5",
+    "yamljs": "^0.2.8"
   }
 }
