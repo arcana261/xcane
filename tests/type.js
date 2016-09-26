@@ -133,14 +133,14 @@ describe('XCaneType', () => {
   });
 
   describe('#isNumber()', () => {
-    it('should return true for iterables', () => {
+    it('should return true for numbers', () => {
       expect(type.isNumber(54.2)).to.be.true;
       expect(type.isNumber(5)).to.be.true;
       expect(type.isNumber(-5)).to.be.true;
       expect(type.isNumber(0)).to.be.true;
     });
 
-    it('should return false for non-iterables', () => {
+    it('should return false for non-numbers', () => {
       expect(type.isNumber(v => v + 2)).to.be.false;
       expect(type.isNumber({
         a: 's'
@@ -182,6 +182,23 @@ describe('XCaneType', () => {
       expect(type.isPromise(null)).to.be.false;
       expect(type.isPromise(undefined)).to.be.false;
       expect(type.isPromise([1, 2])).to.be.false;
+    });
+  });
+
+  describe('#isBoolean()', () => {
+    it('should return true for boolean', () => {
+      expect(type.isBoolean(true)).to.be.true;
+      expect(type.isBoolean(false)).to.be.true;
+    });
+
+    it('should return false for non-booleans', () => {
+      expect(type.isBoolean(v => v + 2)).to.be.false;
+      expect(type.isBoolean({
+        a: 's'
+      })).to.be.false;
+      expect(type.isBoolean(null)).to.be.false;
+      expect(type.isBoolean(undefined)).to.be.false;
+      expect(type.isBoolean(50.3)).to.be.false;
     });
   });
 });
