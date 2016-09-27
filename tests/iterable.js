@@ -3,6 +3,7 @@
 const iterable = require('../lib/iterable');
 const expect = require('chai').expect;
 const task = require('../lib/task');
+const comparer = require('../lib/comparer');
 
 const data = [0, 1, 2, 3, 4, 5];
 const university = [{
@@ -419,6 +420,97 @@ describe('XCaneSynchronIterable', () => {
         .select(x => x.items).flatten().select(x => x.name).orderBy()
         .toArray()).to.be.deep.equal(['nazanin', 'taghi']);
     });
+  });
+
+  describe('#uniqueBy()', () => {
+    it('should unique numbers', () => {
+      expect(iterable.from([5, 1, 9, 4, 1, 2]).uniqueBy().toArray())
+        .to.be.deep.equal([1, 2, 4, 5, 9]);
+    });
+  });
+
+  describe('#minOrValue()', () => {
+    it('should return minimum value in collection', () => {
+      expect(iterable.from([4, 5, 1, 4, -1]).minOrValue(
+        comparer.ascending(), 'default')).to.be.equal(-1);
+    });
+
+    it('should return default value when collection is empty', () => {
+      expect(iterable.from([]).minOrValue(comparer.ascending(), 'default'))
+        .to.be.equal('default');
+    });
+  });
+
+  describe('#minOrNull()', () => {
+    it('should return minium value in collection', () => {
+      expect(iterable.from([1, 2, 0, 4, 5]).minOrNull())
+        .to.be.equal(0);
+    });
+
+    it('should return null when collection is empty', () => {
+      expect(iterable.from([]).minOrNull())
+        .to.be.null;
+    });
+  });
+
+  describe('#min()', () => {
+    it('should return minimum value in collection', () => {
+      expect(iterable.from([-1, 45, 10, -2]).min())
+        .to.be.equal(-2);
+    });
+
+    it('should throw error when collection is empty', () => {
+      expect(() => iterable.from([]).min()).to.throw(Error);
+    });
+  });
+
+  describe('#maxOrValue()', () => {
+    it('should return maximum value in collection', () => {
+      expect(iterable.from([4, 5, 1, 4, -1]).maxOrValue(
+        comparer.ascending(), 'default')).to.be.equal(5);
+    });
+
+    it('should return default value when collection is empty', () => {
+      expect(iterable.from([]).maxOrValue(comparer.ascending(), 'default'))
+        .to.be.equal('default');
+    });
+  });
+
+  describe('#maxOrNull()', () => {
+    it('should return maximum value in collection', () => {
+      expect(iterable.from([1, 2, 0, 4, 5]).maxOrNull())
+        .to.be.equal(5);
+    });
+
+    it('should return null when collection is empty', () => {
+      expect(iterable.from([]).maxOrNull())
+        .to.be.null;
+    });
+  });
+
+  describe('#max()', () => {
+    it('should return maximum value in collection', () => {
+      expect(iterable.from([-1, 45, 10, -2]).max())
+        .to.be.equal(45);
+    });
+
+    it('should throw error when collection is empty', () => {
+      expect(() => iterable.from([]).max()).to.throw(Error);
+    });
+  });
+
+  describe('#range()', () => {
+    it('should create a step 1 range', () =>
+      expect(iterable.from(iterable.range(1, 4)).toArray())
+        .to.be.deep.equal([1, 2, 3]));
+
+    it('should create a positive step range', () =>
+      expect(iterable.from(iterable.range(1, 8, 2)).toArray())
+        .to.be.deep.equal([1, 3, 5, 7]));
+
+    it('should create a negative step range', () =>
+      expect(iterable.from(iterable.range(8, 0, -2.5)).toArray())
+        .to.be.deep.equal([8, 5.5, 3, 0.5]));
   });
 });
 

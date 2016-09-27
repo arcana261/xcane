@@ -30,9 +30,14 @@
     "eslint": "^3.5.0",
     "eslint-config-google": "^0.6.0",
     "jsdoc": "^3.4.1",
-    "mocha": "^3.0.2"
+    "mocha": "^3.0.2",
+    "random-port": "^0.1.0"
   },
   "dependencies": {
-    "object-path": "^0.11.2"
+    "clone": "^1.0.2",
+    "object-path": "^0.11.2",
+    "request": "^2.75.0",
+    "xml-js": "^0.9.5",
+    "yamljs": "^0.2.8"
   }
 }
