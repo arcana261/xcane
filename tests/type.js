@@ -201,4 +201,22 @@ describe('XCaneType', () => {
       expect(type.isBoolean(50.3)).to.be.false;
     });
   });
+
+  describe('#isError()', () => {
+    it('should return true for errors', () => {
+      expect(type.isError(new Error())).to.be.true;
+    });
+
+    it('should return false for non-errors', () => {
+      expect(type.isError(v => v + 2)).to.be.false;
+      expect(type.isBoolean({
+        a: 's'
+      })).to.be.false;
+      expect(type.isError(null)).to.be.false;
+      expect(type.isError(undefined)).to.be.false;
+      expect(type.isError(50.3)).to.be.false;
+      expect(type.isError(false)).to.be.false;
+      expect(type.isError(true)).to.be.false;
+    });
+  });
 });
