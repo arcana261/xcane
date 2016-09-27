@@ -209,7 +209,7 @@ describe('XCaneType', () => {
 
     it('should return false for non-errors', () => {
       expect(type.isError(v => v + 2)).to.be.false;
-      expect(type.isBoolean({
+      expect(type.isError({
         a: 's'
       })).to.be.false;
       expect(type.isError(null)).to.be.false;
@@ -217,6 +217,29 @@ describe('XCaneType', () => {
       expect(type.isError(50.3)).to.be.false;
       expect(type.isError(false)).to.be.false;
       expect(type.isError(true)).to.be.false;
+    });
+  });
+
+  describe('#isNumeric()', () => {
+    it('should return true for numerics', () => {
+      expect(type.isNumeric(50)).to.be.true;
+      expect(type.isNumeric('5.3')).to.be.true;
+      expect(type.isNumeric('5.3')).to.be.true;
+      expect(type.isNumeric('Infinity')).to.be.true;
+      expect(type.isNumeric('NaN')).to.be.true;
+      expect(type.isNumeric(true)).to.be.true;
+      expect(type.isNumeric(false)).to.be.true;
+    });
+
+    it('should return false for non-errors', () => {
+      expect(type.isNumeric(v => v + 2)).to.be.false;
+      expect(type.isNumeric({
+        a: 's'
+      })).to.be.false;
+      expect(type.isNumeric(null)).to.be.false;
+      expect(type.isNumeric(undefined)).to.be.false;
+      expect(type.isNumeric('x5.3')).to.be.false;
+      expect(type.isNumeric('')).to.be.false;
     });
   });
 });
