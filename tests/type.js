@@ -242,4 +242,23 @@ describe('XCaneType', () => {
       expect(type.isNumeric('')).to.be.false;
     });
   });
+
+  describe('#isBuffer()', () => {
+    it('should return true for buffers', () => {
+      expect(type.isBuffer(new Buffer('hello'))).to.be.true;
+    });
+
+    it('should return false for non-errors', () => {
+      expect(type.isBuffer(v => v + 2)).to.be.false;
+      expect(type.isBuffer({
+        a: 's'
+      })).to.be.false;
+      expect(type.isBuffer(null)).to.be.false;
+      expect(type.isBuffer(undefined)).to.be.false;
+      expect(type.isBuffer('x5.3')).to.be.false;
+      expect(type.isBuffer('')).to.be.false;
+      expect(type.isBuffer(true)).to.be.false;
+      expect(type.isBuffer(false)).to.be.false;
+    });
+  });
 });
