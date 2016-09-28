@@ -9,6 +9,7 @@ const task = require('../lib/task');
 const YAML = require('yamljs');
 const XML = require('../lib/xml');
 const type = require('../lib/type');
+const iterable = require('../lib/iterable');
 const randomPort = promise.fromNode(cb =>
    require('random-port')(port => cb(null, port)));
 
@@ -131,14 +132,19 @@ const server = http.createServer((req, res) => {
       });
     }
   } else if (path === '/save') {
-    console.log('HELLOOOOOOOOOOOOOOOOO FROM SAVE!');
+    console.log('HELLOOOOOOOOOOOOOOOOO FROM SAVE!', contentType);
 
-    if (method !== 'POST' || contentType !== 'multipart/form-data') {
-      console.log('NOOOOOOOOOOOOOOOOOOOOO :( :( :( :(', contentType);
+    if (method !== 'POST' || contentType.indexOf('multipart/form-data') !== 0) {
       res.writeHead(400, {'Content-Type': 'text/plain'});
       res.end('oops!');
     } else {
       let payload = '';
+      let boundary = iterable.from(contentType.split(';'))
+        .skip(1)
+        .select(v => v.split('=', 2))
+        .where(v => v[0].trim() === 'boundary')
+        .select(v => v[1])
+        .first();
 
       req.on('readable', () => {
         const part = req.read();
@@ -151,7 +157,11 @@ const server = http.createServer((req, res) => {
       });
 
       req.on('end', () => {
-        console.log('$$$$$$$$$$$$$', payload);
+        expect(payload).to.be.equal(`--${boundary}\r\nContent-Disposition:` +
+          ` form-data; name="myFile"; filename="test.txt"\r\n` +
+          `Content-Type: text/plain\r\n\r\nhello\r\n--${boundary}--\r\n`);
+        res.writeHead(200, {'Content-Type': 'text/plain'});
+        res.end('ok');
       });
     }
   } else if (path === '/hello') {
@@ -357,6 +367,8 @@ describe('XCaneAjax', () => {
         },
         multipart: true
       });
-    });
+
+      expect(res).to.be.equal('ok');
+    }).then(() => done()).catch(done);
   });
 });
