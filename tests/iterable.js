@@ -512,6 +512,17 @@ describe('XCaneSynchronIterable', () => {
       expect(iterable.from(iterable.range(8, 0, -2.5)).toArray())
         .to.be.deep.equal([8, 5.5, 3, 0.5]));
   });
+
+  describe('#skipWhile()', () => {
+    it('should skip elements', () =>
+      expect(iterable.from([1, 3, 4, 5, 7]).skipWhile(v => v % 2 !== 0)
+      .toArray()).to.be.deep.equal([4, 5, 7]));
+  });
+
+  describe('#skip()', () =>
+    it('should skip elements', () =>
+      expect(iterable.from([1, 2, 3, 4]).skip(3).toArray())
+      .to.be.deep.equal([4])));
 });
 
 describe('XCaneAsynchronIterable', () => {
