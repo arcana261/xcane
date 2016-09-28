@@ -69,7 +69,7 @@ const server = http.createServer((req, res) => {
             break;
 
           case 'application/xml':
-            payload = XML.parse(payload);
+            payload = XML.parse(payload).root;
             break;
 
           default:
@@ -98,9 +98,60 @@ const server = http.createServer((req, res) => {
               break;
           }
 
-          res.writeHeader(200, responseHeader);
+          res.writeHead(200, responseHeader);
           res.end(result);
         }
+      });
+    }
+  } else if (path === '/div') {
+    if (method !== 'POST' || contentType !== 'application/x-www-form-urlencoded') {
+      res.writeHead(400, {'Content-Type': 'text/plain'});
+      res.end('oops!');
+    } else {
+      let payload = '';
+
+      req.on('readable', () => {
+        const part = req.read();
+
+        if (type.isString(part)) {
+          payload += part;
+        } else if (type.isBuffer(part)) {
+          payload += part.toString('utf8');
+        }
+      });
+
+      req.on('end', () => {
+        const form = payload.split('&').reduce((p, v) => Object.assign(
+          p, {[v.split('=', 2)[0]]: v.split('=', 2)[1]}), {});
+
+        res.writeHead(200, {'Content-Type': 'text/yaml'});
+        res.end(YAML.stringify({
+          value: Number(form.x) / Number(form.y)
+        }));
+      });
+    }
+  } else if (path === '/save') {
+    console.log('HELLOOOOOOOOOOOOOOOOO FROM SAVE!');
+
+    if (method !== 'POST' || contentType !== 'multipart/form-data') {
+      console.log('NOOOOOOOOOOOOOOOOOOOOO :( :( :( :(', contentType);
+      res.writeHead(400, {'Content-Type': 'text/plain'});
+      res.end('oops!');
+    } else {
+      let payload = '';
+
+      req.on('readable', () => {
+        const part = req.read();
+
+        if (type.isString(part)) {
+          payload += part;
+        } else if (type.isBuffer(part)) {
+          payload += part.toString('utf8');
+        }
+      });
+
+      req.on('end', () => {
+        console.log('$$$$$$$$$$$$$', payload);
       });
     }
   } else if (path === '/hello') {
@@ -234,5 +285,78 @@ describe('XCaneAjax', () => {
       expect(res.headers['content-type']).to.be.equal('application/json');
       expect(res.body.value).to.be.equal(20);
     }).then(() => done()).catch(done);
+  });
+
+  it('should receive 200 on /mul with data:yaml', done => {
+    task.spawn(function* () {
+      let res = yield ajax.request({
+        url: `http://localhost:${serverPort}/mul`,
+        method: 'POST',
+        data: {
+          x: 7,
+          y: 5
+        },
+        yaml: true,
+        resolveWithFullResponse: true
+      });
+
+      expect(res.headers['content-type']).to.be.equal('text/yaml');
+      expect(res.body.value).to.be.equal(35);
+    }).then(() => done()).catch(done);
+  });
+
+  it('should receive 200 on /mul with data:xml', done => {
+    task.spawn(function* () {
+      let res = yield ajax.request({
+        url: `http://localhost:${serverPort}/mul`,
+        method: 'POST',
+        data: {
+          root: {
+            x: 7,
+            y: 5
+          }
+        },
+        xml: true,
+        resolveWithFullResponse: true
+      });
+
+      expect(res.headers['content-type']).to.be.equal('application/xml');
+      expect(res.body.value).to.be.equal(35);
+    }).then(() => done()).catch(done);
+  });
+
+  it('should call div with form data', done => {
+    task.spawn(function* () {
+      let res = yield ajax.request({
+        url: `http://localhost:${serverPort}/div`,
+        method: 'POST',
+        data: {
+          x: 21,
+          y: 3
+        },
+        form: true
+      });
+
+      expect(res.value).to.be.equal(7);
+    }).then(() => done()).catch(done);
+  });
+
+  it('should call save with multipart form upload', done => {
+    task.spawn(function* () {
+      let res = yield ajax.request({
+        url: `http://localhost:${serverPort}/save`,
+        method: 'POST',
+        data: {
+          myFile: {
+            value: new Buffer('hello', 'utf8'),
+            options: {
+              filename: 'test.txt',
+              contentType: 'text/plain'
+            }
+          }
+        },
+        multipart: true
+      });
+    });
   });
 });
