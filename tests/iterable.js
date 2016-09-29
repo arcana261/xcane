@@ -523,6 +523,13 @@ describe('XCaneSynchronIterable', () => {
     it('should skip elements', () =>
       expect(iterable.from([1, 2, 3, 4]).skip(3).toArray())
       .to.be.deep.equal([4])));
+
+  describe('#concat', () =>
+    it('should concat multiple iterables', () =>
+      expect(iterable.from([1, 2]).concat(
+        [3, 4],
+        iterable.from([0, 1, 2, 3, 4]).where(x => x < 2).select(x => x + 5)
+      ).toArray()).to.be.deep.equal([1, 2, 3, 4, 5, 6])));
 });
 
 describe('XCaneAsynchronIterable', () => {
